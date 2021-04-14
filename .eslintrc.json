@@ -1,0 +1,46 @@
+{
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "no-console": 1,
+    "eqeqeq": 1,
+    "arrow-spacing": 2,
+    "semi": [
+      2,
+      "never"
+    ],
+    "camelcase": 0,
+    "no-unused-vars": 0,
+    "no-undef": 1,
+    "eol-last": 1,
+    "indent": [
+      1,
+      2
+    ],
+    "no-empty-function": "off",
+    "no-empty-pattern": "off",
+    "@typescript-eslint/no-empty-pattern": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": "warn"
+  },
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/__tests__/*.{j,t}s?(x)",
+        "**/tests/unit/**/*.spec.{j,t}s?(x)"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}
