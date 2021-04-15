@@ -9,8 +9,7 @@
     "test": "",
     "pretty": "prettier --write src/**/*.ts"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
@@ -22,6 +21,7 @@
     "mocha": "^8.3.2",
     "prettier": "^2.2.1",
     "tsconfig-paths": "^3.9.0",
+    "tslib": "^2.2.0",
     "typescript": "^4.2.4"
   }
 }
