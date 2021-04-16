@@ -12,10 +12,15 @@
     "outDir": "dist",
     "sourceMap": true,
     "baseUrl": ".",
+    "downlevelIteration": true,
     "paths": {
       "@/*": ["src/*"],
       "*": ["node_modules/*"]
     },
+    "lib": [
+      "es2020",
+      "dom"
+    ]
   },
   "include": ["src/**/*.ts"],
   "exclude": [

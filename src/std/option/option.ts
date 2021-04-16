@@ -2,7 +2,7 @@ import { cast } from '@/std/generics'
 import Results, { Result } from '@/std/result/result'
 
 // Module Interface
-  export interface Options {
+export interface Options {
   some: <T>(some: T) => Option<T>
   none: () => Option
 }
@@ -54,7 +54,7 @@ function map<T, M>(this: Option<T>, mapper: OptionMapper<T, M>): Option<M> | Opt
 }
 
 function mapOr<T, M>(this: Option<T>, def: M, mapper: OptionMapper<T, M>): M {
-  if(this.isSome()) return mapper(this.Some!)
+  if (this.isSome()) return mapper(this.Some!)
   return def
 }
 
