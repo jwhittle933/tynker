@@ -1,14 +1,21 @@
 import { Enumerable } from '@/collections/enum'
 
-interface MapModule {
+interface Maps {
   fromObject: <T extends Object>(obj: T) => T
-  fromEnum: <T>(enumerable: Enumerable<T>) => Map<T>
 }
 
-export interface Map<T extends Object> {
-  [index: string]: T
+export interface Map<T extends Object> extends Enumerable<[string, T]> {
+  iter: () => Array<[string, T]>
+  wrapped: T
 }
 
-export function fromEnum<T>(this: Map<T>): Enumerable<T> {
-  return Object.values(this)
+function iter<T>(this: Map<T>): Array<[string, T]> {
+  const { iter, ...rest } = this
+  return Object.entries(rest)
 }
+
+export const fromObject = <T>(wrapped: T): Map<T> => {
+  return { wrapped, iter }
+}
+
+export default <Maps>{ fromObject }

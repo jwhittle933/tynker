@@ -1,1 +1,3 @@
-export interface Enumerable<T> extends Array<T> {}
+export interface Enumerable<T> {
+  iter: () => Array<T>
+}

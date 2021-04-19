@@ -1,6 +1,6 @@
 import { Enumerable } from '@/collections/enum'
 
-interface EnumModule {
+interface Enum {
   all: <T>(en: Enumerable<T>, fn: Enumerator<T>) => boolean
   any: <T>(en: Enumerable<T>, fn: Enumerator<T>) => boolean
   at: <T>(en: Enumerable<T>, index: number, def?: T) => T | null
@@ -12,19 +12,31 @@ interface EnumModule {
   fetch: <T>(enumerable: Enumerable<T>, index: number) => T
   into: <T>(container: Enumerable<T>, enumerable: Enumerable<T>) => Enumerable<T>
   mapInto: <T>(container: Enumerable<T>, enumerable: Enumerable<T>, apply: { (item: T): T }) => Enumerable<T>
+  isMember: <T>(enumerable: Enumerable<T>, item: T) => boolean
+  reject: <T>(enumerable: Enumerable<T>) => Enumerable<T>
+  sum: (enumerable: Enumerable<number>) => number
+  take: <T>(enumerable: Enumerable<T>) => Enumerable<T>
+  uniq: <T>(enumerable: Enumerable<T>) => Enumerable<T>
+  zip: <T>(...enumerables: Enumerable<T>[]) => Enumerable<T>
 }
 
 export interface Enumerator<T> {
   (each: T): boolean
 }
 
-export const all = <T>(enumerable: Enumerable<T>, fn: Enumerator<T>): boolean => enumerable.every(fn)
+const fromEnum = <T>(enumerable: Enumerable<T>): Array<T> => enumerable.iter()
 
-export const any = <T>(enumerable: Enumerable<T>, fn: Enumerator<T>): boolean => enumerable.some(fn)
+const toEnum = <T>(a: Array<T>): Enumerable<T> => ({ iter: () => a })
 
-export const at = <T>(enumerable: Enumerable<T>, index: number, def?: T): T | null => {
-  if (enumerable.length <= index) return (!!def && def!) || null
-  return enumerable[index]
+export const all = <T>({ iter }: Enumerable<T>, fn: Enumerator<T>): boolean => iter().every(fn)
+
+export const any = <T>({ iter }: Enumerable<T>, fn: Enumerator<T>): boolean => iter().some(fn)
+
+export const at = <T>({ iter }: Enumerable<T>, index: number, def?: T): T | null => {
+  const e = iter()
+
+  if (e.length <= index) return (!!def && def!) || null
+  return e[index]
 }
 
 // TODO
@@ -37,9 +49,9 @@ export const concat = <T>(enumerable: Enumerable<T>): Enumerable<T> => {
   return enumerable
 }
 
-export const count = <T>(enumerable: Enumerable<T>, fn?: Enumerator<T>): number => {
-  if (!!fn) return enumerable.filter(fn!).length
-  return enumerable.length
+export const count = <T>({ iter }: Enumerable<T>, fn?: Enumerator<T>): number => {
+  if (!!fn) return iter().filter(fn!).length
+  return iter().length
 }
 
 // TODO: actually dedup
@@ -52,25 +64,75 @@ export const dedupWith = <T>(enumerable: Enumerable<T>, deduper: { (item: T): T 
   return enumerable
 }
 
-const drop = <T>(enumerable: Enumerable<T>, d: number): Enumerable<T> => {
+const drop = <T>({ iter }: Enumerable<T>, d: number): Enumerable<T> => {
   // optimization - consider for - loop for iter control
-  if (d < 0) return enumerable.reverse().filter((x, index) => index < Math.abs(d) && x)
-  return enumerable.filter((x, index) => index < d && x)
+  if (d < 0)
+    return toEnum(
+      iter()
+        .reverse()
+        .filter((x, index) => index < Math.abs(d) && x),
+    )
+  return toEnum(iter().filter((x, index) => index < d && x))
 }
 
-const empty = <T>({ length }: Enumerable<T>): boolean => length === 0
+const empty = <T>(enumerable: Enumerable<T>): boolean => count(enumerable) === 0
 
 // TODO: handle out of bounds
-const fetch = <T>(enumerable: Enumerable<T>, index: number): T => {
-  if (index < 0) return enumerable[index + enumerable.length]
-  return enumerable[index]
+const fetch = <T>({ iter }: Enumerable<T>, index: number): T => {
+  if (index < 0) return iter()[index + iter.length]
+  return iter()[index]
 }
 
 const into = <T>(container: Enumerable<T>, enumerable: Enumerable<T>): Enumerable<T> => {
-  return [...container, ...enumerable]
+  return toEnum([...container.iter(), ...enumerable.iter()])
 }
 
-const mapInto = <T>(container: Enumerable<T>, enumerable: Enumerable<T>, apply: { (item: T): T }): Enumerable<T> =>
-  into(container, enumerable.map(apply))
+const mapInto = <T>(container: Enumerable<T>, { iter }: Enumerable<T>, apply: { (item: T): T }): Enumerable<T> =>
+  into(container, toEnum(iter().map(apply)))
 
-export default <EnumModule>{ all, any, at, count, dedup, dedupWith, drop, empty, fetch, into, mapInto }
+const isMember = <T>({ iter }: Enumerable<T>, item: T) => iter().includes(item)
+
+const reject = <T>({ iter }: Enumerable<T>, fn: { (item: T): boolean }): Enumerable<T> =>
+  toEnum(iter().filter((item: T) => !fn(item)))
+
+const sum = ({ iter }: Enumerable<number>): number =>
+  iter().reduce((acc, item) => acc + item, 0)
+
+const take = <T>({ iter }: Enumerable<T>, amount: number): Enumerable<T> => {
+  if (!amount) return toEnum([])
+  if (amount < 0) return toEnum(iter().reverse().slice(0 , Math.abs(amount)))
+
+  return toEnum(iter().slice(0 , amount))
+}
+
+// TODO: make more efficient
+const uniq = <T>({ iter }: Enumerable<T>): Enumerable<T> =>
+  toEnum(
+    iter()
+      .map(item => JSON.stringify(item))
+      .filter((item, index, self) => self.includes(item))
+      .map(item => JSON.parse(item))
+  )
+
+const zip = <T>(...enumerables: Enumerable<T>[]) => {
+   //
+}
+
+export default <Enum>{
+  all,
+  any,
+  at,
+  count,
+  dedup,
+  dedupWith,
+  drop,
+  empty,
+  fetch,
+  into,
+  mapInto,
+  isMember,
+  reject,
+  sum,
+  take,
+  uniq
+}

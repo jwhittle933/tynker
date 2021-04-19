@@ -2,4 +2,9 @@ export interface Chars {
   //
 }
 
-export interface Char extends Array<{ length: 1, 0: string | number}> {}
+interface ArrayLike {
+  length: 1
+  0: string | number
+}
+
+export interface Char extends ArrayLike {}

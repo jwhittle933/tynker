@@ -1,5 +1,5 @@
-import { cast } from '@/std/generics'
-import Results, { Result } from '@/std/result/result'
+import { cast } from '@/core/generics'
+import Results, { Result } from '@/core/result/result'
 
 // Module Interface
 export interface Options {

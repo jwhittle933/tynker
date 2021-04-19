@@ -1,5 +1,5 @@
-import Options, { Option } from '@/std/option'
-import { cast } from '@/std/generics'
+import Options, { Option } from '@/core/option'
+import { cast } from '@/core/generics'
 
 // Module Interface
 export interface Results {

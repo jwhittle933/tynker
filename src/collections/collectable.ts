@@ -1,12 +1,7 @@
-export enum CollectionInstruction {
-  DONE = 'done',
-  CONT = 'continue',
-}
-
 export interface CollectorFunc<T> {
-  (value: T, next: [CollectionInstruction, any]): T
+  (value: T, next: T): T
 }
 
 export interface Collectable<T> {
-  into: <T>() => [T, CollectorFunc<T>]
+  into: (original: T) => [T, CollectorFunc<T>]
 }
