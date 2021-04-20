@@ -23,7 +23,8 @@ const fromObject = (bounds: { lower: number; upper: number }): Range => {
 }
 
 const fromString = (bounds: string = '1..100'): Range => {
-  return from(...bounds.split('..').map((bound) => Number(bound)))
+  const [lower, upper] = bounds.split('..').map((bound) => Number(bound))
+  return from(lower, upper)
 }
 
 function iter(this: Range): Array<number> {

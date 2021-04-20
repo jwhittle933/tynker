@@ -1,7 +1,7 @@
 {
   "name": "hex-core",
   "version": "1.0.0",
-  "description": "Functional, TypeScripted library based on Elixir std lib",
+  "description": "Functional, TypeScripted library for expressive, reusable code",
   "author": "Jonathan Whittle",
   "license": "MIT",
   "scripts": {
