@@ -10,4 +10,6 @@ export interface PipelineFunc<T> {
   (data: T): T
 }
 
-export const pipe = <T>(...fns: PipelineFunc<T>[]) => (initial: T) => fns.reduce((v, f) => f(v), initial)
+export const pipe = <T>(...fns: PipelineFunc<T>[]) => (initial: T) => fns.reduce((prev, apply) => apply(prev), initial)
+
+export default { pipe }
