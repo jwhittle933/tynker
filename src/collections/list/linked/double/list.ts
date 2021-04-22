@@ -6,7 +6,7 @@ export interface DoublyLinkedLists {
   create: <T>(val: T) => DoublyLinkedList<T>
 }
 
-export interface DoublyLinkedList<T> extends LinkedList<T>{
+export interface DoublyLinkedList<T> extends LinkedList<T> {
   tail: () => Node<T>
   insertHead: (val: T) => DoublyLinkedList<T>
   deleteHead: () => DoublyLinkedList<T>
@@ -23,12 +23,12 @@ const create = <T>(val: T): DoublyLinkedList<T> => {
     insertHead,
     deleteHead,
     insertTail,
-    deleteTail
+    deleteTail,
   }
 }
 
 function insertHead<T>(this: DoublyLinkedList<T>, val: T): DoublyLinkedList<T> {
-  return ({ ...this, head: () => Nodes.create(val, this.head()) })
+  return { ...this, head: () => Nodes.create(val, this.head()) }
 }
 
 // soft delete head, nodes still linked
@@ -37,7 +37,7 @@ function deleteHead<T>(this: DoublyLinkedList<T>): DoublyLinkedList<T> {
     null,
     Nodes.create<T>(this.head().right()!.value(), this.head().right(), null),
     this.head().right()!,
-)
+  )
 
   return { ...this, head: () => head }
 }
@@ -46,17 +46,13 @@ function insertTail<T>(this: DoublyLinkedList<T>, val: T): DoublyLinkedList<T> {
   const tail = Nodes.create(val, null, this.head())
   Nodes.join(null, this.tail(), tail)
 
-  return { ...this, tail: () => tail}
-}
-
-function deleteTail<T>(this: DoublyLinkedList<T>): DoublyLinkedList<T> {
-  const tail = Nodes.join(
-    this.tail().left()!,
-    Nodes.create<T>(this.tail().left()!.value(), null, this.tail().left())
-  )
-
   return { ...this, tail: () => tail }
 }
 
+function deleteTail<T>(this: DoublyLinkedList<T>): DoublyLinkedList<T> {
+  const tail = Nodes.join(this.tail().left()!, Nodes.create<T>(this.tail().left()!.value(), null, this.tail().left()))
+
+  return { ...this, tail: () => tail }
+}
 
 export default Modules.module<DoublyLinkedLists>({ create })

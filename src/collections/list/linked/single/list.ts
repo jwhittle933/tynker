@@ -8,7 +8,13 @@ export interface LinkedList<T> {
   deleteAt: (n: number) => LinkedList<T>
 }
 
-const create = <T>(val: T): LinkedList<T> => ({ head: () => Nodes.create<T>(null, val), read, indexOf, insertAt, deleteAt })
+const create = <T>(val: T): LinkedList<T> => ({
+  head: () => Nodes.create<T>(null, val),
+  read,
+  indexOf,
+  insertAt,
+  deleteAt,
+})
 
 function read<T>(this: LinkedList<T>, n: number): T | null {
   let current: Node<T> | null = this.head().right()

@@ -1,3 +1,3 @@
-declare module "tynker/collections/list/double" {
+declare module 'tynker/collections/list/double' {
   //
 }
