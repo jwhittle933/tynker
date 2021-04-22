@@ -1,24 +1,26 @@
-interface NodeValue<T> {
+import { Nullable } from '@/primitive/null'
+
+interface ValueNode<T> {
   value: () => T
 }
 
-interface NodeNext<T> extends NodeValue<T> {
-  next: () => Node<T> | null
+interface BackwardNode<T> extends ValueNode<T> {
+  left: () => Nullable<Node<T>>
 }
 
-interface NodePrev<T> extends NodeValue<T> {
-  prev: () => Node<T> | null
+interface ForwardNode<T> extends ValueNode<T> {
+  right: () => Nullable<Node<T>>
 }
 
-export interface Node<T> extends NodePrev<T>, NodeNext<T> {
-  link: (next: Node<T>) => Node<T>
+export interface Node<T> extends BackwardNode<T>, ForwardNode<T> {
+  link: (right: Nullable<Node<T>>, left: Nullable<Node<T>> = null) => Node<T>
 }
 
-const create = <T>(val: T, next: Node<T> | null = null, prev: Node<T> | null = null): Node<T> => ({
+const create = <T>(val: T, right: Node<T> | null = null, left: Node<T> | null = null): Node<T> => ({
   value: (): T => val,
-  next: (): Node<T> | null => next,
-  prev: (): Node<T> | null => prev,
-  link: (next: Node<T> | null = null, prev: Node<T> | null = null) => create(val, next, prev),
+  left: (): Nullable<Node<T>> => left,
+  right: (): Nullable<Node<T>> => right,
+  link: (right: Node<T>, left: Nullable<Node<T>> = null) => create(val, right, left),
 })
 
 export default { create }

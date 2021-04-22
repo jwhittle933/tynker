@@ -1,5 +1,4 @@
-import { cast } from '@/core/generics'
-import Results, { Result } from '@/core/result/result'
+import Modules from '@/core/module'
 
 // Module Interface
 export interface Options {
@@ -72,4 +71,4 @@ const none = (): Option => {
   return { None: true, ...optionBase }
 }
 
-export default cast<Options>({ some, none })
+export default Modules.module<Options>({ some, none })
