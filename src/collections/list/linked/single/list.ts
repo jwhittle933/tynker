@@ -1,75 +1,70 @@
-import Nodes, { Node } from '@/primitive/node'
+import Nodes, { Node, NullableNode } from '@/primitive/node'
+import { Nullable } from '@/primitive/null'
 
 export interface LinkedList<T> {
-  head: () => Node<T>
+  head: Node<T>
   read: (n: number) => T | null
-  indexOf: (val: T) => number
-  insertAt: (n: number, val: T) => LinkedList<T>
+  indexOf: (val: T, offset: number) => Nullable<number>
+  insertAt: (val: T, n: number) => LinkedList<T>
   deleteAt: (n: number) => LinkedList<T>
 }
 
 const create = <T>(val: T): LinkedList<T> => ({
-  head: () => Nodes.create<T>(null, val),
+  head: Nodes.create<T>(val),
   read,
   indexOf,
   insertAt,
   deleteAt,
 })
 
-function read<T>(this: LinkedList<T>, n: number): T | null {
-  let current: Node<T> | null = this.head().right()
-  let index: number = 0
+const rotate = <T>(list: LinkedList<T>, n: number = 0): NullableNode<T> => {
+  if (n === 0) return list.head
+
+  let current: NullableNode<T> = list.head.right
+  let index = 0
 
   while (index < n) {
-    current = current!.right()
+    current = current!.right
     index += 1
 
     if (!current) return null
   }
 
-  return current!.value()
+  return current
 }
 
-function indexOf<T>(this: LinkedList<T>, val: T): number {
-  let current: Node<T> | null = this.head()
-  let index = 0
-
-  do {
-    if (current.value() === val) return index
-
-    current = current.right()
-    index += 1
-  } while (current)
-
-  return -1
+function read<T>(this: LinkedList<T>, n: number = 0): Nullable<T> {
+  const node = rotate(this, n)
+  return (node && node!.value) || null
 }
 
-function insertAt<T>(this: LinkedList<T>, n: number, val: T): LinkedList<T> {
-  if (!n) return create(Nodes.create<T>(null, val, this.head()))
+function indexOf<T>(this: LinkedList<T>, val: T, offset: number = 0): Nullable<number> {
+  const data = this.read(offset)
 
-  const nodeAtN = windList(this, n - 1)
-  nodeAtN.link(Nodes.create<T>(null, val, nodeAtN.right()!))
+  if (!data) return null
+  if (data! === val) return offset
+
+  return this.indexOf(val, offset + 1)
+}
+
+function insertAt<T>(this: LinkedList<T>, val: T, n: number = 0): LinkedList<T> {
+  if (!n) return { ...this, head: Nodes.create(val, null, this.head) }
+
+  const nodeAtN = rotate(this, n - 1)
+  if (!nodeAtN) return this // should this error silently?
+
+  nodeAtN.joinRight(Nodes.create<T>(val, null, nodeAtN.right))
   return this
 }
 
 function deleteAt<T>(this: LinkedList<T>, n: number): LinkedList<T> {
-  if (!n) return create(this.head().right())
+  if (!n) return { ...this, head: this.head.right! }
 
-  const nodeAtN = windList(this, n - 1)
-  nodeAtN.link(nodeAtN.right()!.right()!) // handle nulls
+  const nodeAtN = rotate(this, n - 1)
+  if (!nodeAtN) return this
+
+  nodeAtN.joinRight(nodeAtN!.right!.right!) // handle nulls
   return this
-}
-
-const windList = <T>(list: LinkedList<T>, n: number): Node<T> => {
-  let current: Node<T> | null = list.head()
-  let index = 0
-
-  while (index < n) {
-    current = current!.right()
-    index += 1
-  }
-
-  return current!
 }
 
 export default { create }
