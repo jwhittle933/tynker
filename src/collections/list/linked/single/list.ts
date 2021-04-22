@@ -8,7 +8,7 @@ export interface LinkedList<T> {
   deleteAt: (n: number) => LinkedList<T>
 }
 
-const create = <T>(val: T): LinkedList<T> => ({ head: () => Nodes.create<T>(val), read, indexOf, insertAt, deleteAt })
+const create = <T>(val: T): LinkedList<T> => ({ head: () => Nodes.create<T>(null, val), read, indexOf, insertAt, deleteAt })
 
 function read<T>(this: LinkedList<T>, n: number): T | null {
   let current: Node<T> | null = this.head().right()
@@ -39,10 +39,10 @@ function indexOf<T>(this: LinkedList<T>, val: T): number {
 }
 
 function insertAt<T>(this: LinkedList<T>, n: number, val: T): LinkedList<T> {
-  if (!n) return create(Nodes.create<T>(val, this.head()))
+  if (!n) return create(Nodes.create<T>(null, val, this.head()))
 
   const nodeAtN = windList(this, n - 1)
-  nodeAtN.link(Nodes.create<T>(val, nodeAtN.right()!))
+  nodeAtN.link(Nodes.create<T>(null, val, nodeAtN.right()!))
   return this
 }
 
