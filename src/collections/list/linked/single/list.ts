@@ -1,40 +1,53 @@
-import Nodes, { Node, NullableNode } from '@/primitive/node'
+import Nodes, { ForwardNode, NullableNode } from '@/primitive/node'
 import { Nullable } from '@/primitive/null'
+import Modules from '@/core/module'
+import { wbr } from 'typedoc/dist/lib/output/helpers/wbr'
 
-export interface LinkedList<T> extends Node<T> {
-  read: (n: number) => T | null
-  indexOf: (val: T, offset: number) => Nullable<number>
-  insertAt: (val: T, n: number) => LinkedList<T>
-  deleteAt: (n: number) => LinkedList<T>
+export interface LinkedLists {
+  create: <T>(val: T) => LinkedList<T>
+  handle: <T>(node: ForwardNode<T>) => LinkedList<T>
 }
 
-const create = <T>(val: T): LinkedList<T> => ({
-  ...Nodes.create<T>(val, null, null),
+export interface LinkedList<T> extends ForwardNode<T> {
+  read: (n?: number) => T | null
+  indexOf: (val: T, offset?: number) => Nullable<number>
+  insertAt: (val: T, n?: number) => LinkedList<T>
+  deleteAt: (n?: number) => LinkedList<T>
+}
+
+const create = <T>(val: T): LinkedList<T> =>
+  handle(Nodes.create<T>(val, null, null))
+
+const handle = <T>(node: ForwardNode<T>): LinkedList<T> => ({
+  ...node,
   read,
   indexOf,
   insertAt,
   deleteAt,
 })
 
-const rotate = <T>(list: LinkedList<T>, n: number = 0): NullableNode<T> => {
-  if (n === 0) return list
+const rotate = <T>(list: LinkedList<T>, n: number = 0): Nullable<ForwardNode<T>> => {
+  let current: Nullable<ForwardNode<T>> = list
+  if (!current) return null
 
-  let current: NullableNode<T> = list.right
   let index = 0
-
   while (index < n) {
+    if (!current!.right) return null
+
     current = current!.right
     index += 1
-
-    if (!current) return null
   }
 
   return current
 }
 
+const nodeValue = <T>(node: Nullable<ForwardNode<T>>): Nullable<T> => node && node!.value || null
+const nodeNext = <T>(node: Nullable<ForwardNode<T>>): NullableNode<T> => node && node!.right || null
+
 function read<T>(this: LinkedList<T>, n: number = 0): Nullable<T> {
-  const node = rotate(this, n)
-  return (node && node!.value) || null
+  if (!n) return this.value
+
+  return nodeValue(rotate(this, n))
 }
 
 function indexOf<T>(this: LinkedList<T>, val: T, offset: number = 0): Nullable<number> {
@@ -47,7 +60,7 @@ function indexOf<T>(this: LinkedList<T>, val: T, offset: number = 0): Nullable<n
 }
 
 function insertAt<T>(this: LinkedList<T>, val: T, n: number = 0): LinkedList<T> {
-  if (!n) return { ...this, ...Nodes.create(val, null, this) }
+  if (!n) return { ...this, ...Nodes.create(val, null, this.right) }
 
   const nodeAtN = rotate(this, n - 1)
   if (!nodeAtN) return this // should this error silently?
@@ -56,14 +69,14 @@ function insertAt<T>(this: LinkedList<T>, val: T, n: number = 0): LinkedList<T> 
   return this
 }
 
-function deleteAt<T>(this: LinkedList<T>, n: number): LinkedList<T> {
-  if (!n) return { ...this, ...this.right! }
+function deleteAt<T>(this: LinkedList<T>, n: number = 0): LinkedList<T> {
+  if (!n) return { ...this, ...nodeNext(this) }
 
   const nodeAtN = rotate(this, n - 1)
   if (!nodeAtN) return this
 
-  nodeAtN.joinRight(nodeAtN!.right!.right!) // handle nulls
+  nodeAtN.joinRight(nodeNext(nodeAtN)!.right!) // handle nulls
   return this
 }
 
-export default { create }
+export default Modules.module<LinkedLists>({ create, handle })

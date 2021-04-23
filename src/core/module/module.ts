@@ -2,6 +2,6 @@ export interface Modules {
   module: <T>(data: T) => T
 }
 
-export const module = <T>(data: T): T => data
+export const _module = <T>(data: T): T => data
 
-export default module<Modules>({ module })
+export default _module<Modules>({ module: _module })

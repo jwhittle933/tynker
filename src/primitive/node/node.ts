@@ -5,7 +5,7 @@ import { Nullable } from '@/primitive/null'
 // Node<[<- Previous Node][Value][Next Node ->]>
 
 export interface Nodes {
-  create: <T>(value: T, left: NullableNode<T>, right: NullableNode<T>) => Node<T>
+  create: <T>(value: T, left?: NullableNode<T>, right?: NullableNode<T>) => Node<T>
 }
 
 interface ValueNode<T> {
@@ -13,13 +13,13 @@ interface ValueNode<T> {
   update: <T>(value: T) => Node<T>
 }
 
-interface BackwardNode<T> extends ValueNode<T> {
+export interface BackwardNode<T> extends ValueNode<T> {
   left: NullableNode<T>
   joinLeft: <T>(left: Node<T>) => Node<T>
   disjoinLeft: <T>() => Node<T>
 }
 
-interface ForwardNode<T> extends ValueNode<T> {
+export interface ForwardNode<T> extends ValueNode<T> {
   right: NullableNode<T>
   joinRight: <T>(right: Node<T>) => Node<T>
   disjoinRight: <T>() => Node<T>

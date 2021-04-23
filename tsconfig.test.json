@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "esnext",
+    "module": "CommonJS",
     "strict": true,
     "importHelpers": true,
     "moduleResolution": "node",
@@ -22,9 +22,6 @@
       "dom"
     ]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    "src/**/*.test.ts"
-  ]
+  "include": ["src/**/*.test.ts"],
+  "exclude": ["node_modules"]
 }

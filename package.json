@@ -6,13 +6,15 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf ./dist && tsc",
-    "test": "",
+    "test": "TS_NODE_PROJECT=tsconfig.test.json mocha -r ts-node/register -r tsconfig-paths/register src/**/*.test.ts",
     "pretty": "prettier --write src"
   },
   "dependencies": {
     "typedoc": "^0.20.35"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.16",
+    "@types/mocha": "^8.2.2",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "chai": "^4.3.4",
@@ -22,6 +24,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "mocha": "^8.3.2",
     "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4"
