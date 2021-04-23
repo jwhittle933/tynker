@@ -1,7 +1,12 @@
+import Modules from '@/core/module'
 import { Nullable } from '@/primitive/null'
 
 // Node Interface
 // Node<[<- Previous Node][Value][Next Node ->]>
+
+export interface Nodes {
+  create: <T>(value: T, left: NullableNode<T>, right: NullableNode<T>) => Node<T>
+}
 
 interface ValueNode<T> {
   value: T
@@ -79,4 +84,4 @@ function update<T>(this: Node<T>, value: T): Node<T> {
   return this
 }
 
-export default { create }
+export default Modules.module<Nodes>({ create })

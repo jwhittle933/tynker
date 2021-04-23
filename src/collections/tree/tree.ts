@@ -1,5 +1,5 @@
-import Nodes, { Node } from "@/primitive/node"
 import Module from '@/core/module'
+import Nodes, { Node, NullableNode } from "@/primitive/node"
 
 export interface Trees {
   create: <T>(root: T) => Tree<T>

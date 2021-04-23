@@ -12,16 +12,25 @@ export interface BinarySearchTrees {
   create: <T>(root: T) => BinarySearchTree<T>
 }
 
-export interface BinarySearchTree<T> extends Tree<T> {
-}
+export interface BinarySearchTree<T> extends Tree<T> {}
 
 export const create = <T>(root: T): BinarySearchTree<T> =>
   ({ ...Trees.create<T>(root) })
 
 export const fromEnumerable = <T>({ iter }: Enumerable<T>): BinarySearchTree<T> => {
-  const list = Lists.shuffle(Lists.new(iter()))
-  if (list.length === 0) return null
-  const tree = create(list[0])
+  const list = Lists.new(iter().sort())
+
+  const mid = Math.floor(list.length / 2)
+  const left = list.slice(0, mid)
+  const right = list.slice(mid + 1, list.length)
+
+  const tree = create<T>(list[mid])
+
+
+
+
+
+  return tree
 }
 
 const search = <T>(node: NullableNode<T>, value: T): NullableNode<T> => {
@@ -30,6 +39,13 @@ const search = <T>(node: NullableNode<T>, value: T): NullableNode<T> => {
   if (node.value === value) return node
   if (value < node.value) return search(node.left!, value)
   return search(node.right!, value)
+}
+
+function insert<T>(this: BinarySearchTree<T>, val: T): BinarySearchTree<T> {
+  //
+
+
+  return this
 }
 
 export default Modules.module<BinarySearchTrees>({ create })

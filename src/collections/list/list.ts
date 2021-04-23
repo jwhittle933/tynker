@@ -2,6 +2,18 @@ import { Enumerable } from '@/collections/enum'
 import Modules from '@/core/module'
 import Numbers from '@/primitive/number'
 
+/**
+ * `Lists` Module
+ *
+ * Examples:
+ * ```typescript
+ * const list = Lists.new<number>([1, 2, 3, 4])
+ * Lists.shuffle(list) // => [3, 1, 2, 4]
+ *
+ * // List satisfies Enumerable
+ * list.iter() // => Array<number>
+ * ```
+ * */
 export interface Lists {
   new: <T>(arr: T[]) => List<T>
   shuffle: (list: List<StringOrNumber>) => List<StringOrNumber>
@@ -47,8 +59,7 @@ export const shuffleMut = (list: List<StringOrNumber>): List<StringOrNumber> => 
 
 export const swap = (list: List<StringOrNumber>, i: number, j: number) => {
   let q = list[i]
-  list[i] = list[j]
-  list[j] = q
+  list[i], list[j] = list[j], q
 
   return list
 }
