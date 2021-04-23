@@ -1,8 +1,8 @@
 import { Enumerable } from '@/collections/enum'
 import Trees, { Tree } from '@/collections/tree'
 import Modules from '@/core/module'
-import { Nullable } from '@/primitive/null'
 import { NullableNode } from '@/primitive/node'
+import Lists from '@/collections/list'
 
 export interface Comparator<T> {
   (value: T): boolean
@@ -19,7 +19,9 @@ export const create = <T>(root: T): BinarySearchTree<T> =>
   ({ ...Trees.create<T>(root) })
 
 export const fromEnumerable = <T>({ iter }: Enumerable<T>): BinarySearchTree<T> => {
-  //
+  const list = Lists.shuffle(Lists.new(iter()))
+  if (list.length === 0) return null
+  const tree = create(list[0])
 }
 
 const search = <T>(node: NullableNode<T>, value: T): NullableNode<T> => {
