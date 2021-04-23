@@ -1,8 +1,7 @@
 import Nodes, { Node, NullableNode } from '@/primitive/node'
 import { Nullable } from '@/primitive/null'
 
-export interface LinkedList<T> {
-  head: Node<T>
+export interface LinkedList<T> extends Node<T> {
   read: (n: number) => T | null
   indexOf: (val: T, offset: number) => Nullable<number>
   insertAt: (val: T, n: number) => LinkedList<T>
@@ -10,7 +9,7 @@ export interface LinkedList<T> {
 }
 
 const create = <T>(val: T): LinkedList<T> => ({
-  head: Nodes.create<T>(val),
+  ...Nodes.create<T>(val, null, null),
   read,
   indexOf,
   insertAt,
@@ -18,9 +17,9 @@ const create = <T>(val: T): LinkedList<T> => ({
 })
 
 const rotate = <T>(list: LinkedList<T>, n: number = 0): NullableNode<T> => {
-  if (n === 0) return list.head
+  if (n === 0) return list
 
-  let current: NullableNode<T> = list.head.right
+  let current: NullableNode<T> = list.right
   let index = 0
 
   while (index < n) {
@@ -48,7 +47,7 @@ function indexOf<T>(this: LinkedList<T>, val: T, offset: number = 0): Nullable<n
 }
 
 function insertAt<T>(this: LinkedList<T>, val: T, n: number = 0): LinkedList<T> {
-  if (!n) return { ...this, head: Nodes.create(val, null, this.head) }
+  if (!n) return { ...this, ...Nodes.create(val, null, this) }
 
   const nodeAtN = rotate(this, n - 1)
   if (!nodeAtN) return this // should this error silently?
@@ -58,7 +57,7 @@ function insertAt<T>(this: LinkedList<T>, val: T, n: number = 0): LinkedList<T> 
 }
 
 function deleteAt<T>(this: LinkedList<T>, n: number): LinkedList<T> {
-  if (!n) return { ...this, head: this.head.right! }
+  if (!n) return { ...this, ...this.right! }
 
   const nodeAtN = rotate(this, n - 1)
   if (!nodeAtN) return this
