@@ -1,7 +1,7 @@
 import Nodes, { ForwardNode, NullableNode } from '@/primitive/node'
 import { Nullable } from '@/primitive/null'
 import Modules from '@/core/module'
-import { wbr } from 'typedoc/dist/lib/output/helpers/wbr'
+import Lists, { List } from '@/collections/list'
 
 export interface LinkedLists {
   create: <T>(val: T) => LinkedList<T>
@@ -13,6 +13,7 @@ export interface LinkedList<T> extends ForwardNode<T> {
   indexOf: (val: T, offset?: number) => Nullable<number>
   insertAt: (val: T, n?: number) => LinkedList<T>
   deleteAt: (n?: number) => LinkedList<T>
+  all: () => List<T>
 }
 
 const create = <T>(val: T): LinkedList<T> =>
@@ -24,6 +25,7 @@ const handle = <T>(node: ForwardNode<T>): LinkedList<T> => ({
   indexOf,
   insertAt,
   deleteAt,
+  all
 })
 
 const rotate = <T>(list: LinkedList<T>, n: number = 0): Nullable<ForwardNode<T>> => {
@@ -68,15 +70,25 @@ function insertAt<T>(this: LinkedList<T>, val: T, n: number = 0): LinkedList<T> 
   nodeAtN.joinRight(Nodes.create<T>(val, null, nodeAtN.right))
   return this
 }
-
 function deleteAt<T>(this: LinkedList<T>, n: number = 0): LinkedList<T> {
   if (!n) return { ...this, ...nodeNext(this) }
 
   const nodeAtN = rotate(this, n - 1)
-  if (!nodeAtN) return this
+  if (!nodeAtN)
+ return this
 
   nodeAtN.joinRight(nodeNext(nodeAtN)!.right!) // handle nulls
   return this
+}
+
+function all<T>(this: LinkedList<T>): List<T> {
+  let out: T[] = []
+
+  for(let i = 0, current = rotate(this, i); current; i++, current = rotate(this, i)) {
+    out = [...out, current!.value]
+  }
+
+  return Lists.new<T>(out)
 }
 
 export default Modules.module<LinkedLists>({ create, handle })

@@ -109,27 +109,38 @@ describe('LinkedList', () => {
     })
   })
 
-  describe('LinkedList.deleteAt', () => {
+  describe('LinkedList.all', () => {
     const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
     const list = LinkedLists.handle(head)
 
+    it('should a List of 3 items', () => {
+      const actual = list.all()
+      expect(actual.length).to.be.equal(3)
+    })
+  })
+
+  describe('LinkedList.deleteAt', () => {
     it('should delete the first node with no argument', () => {
-      expect(list.indexOf(10)).to.equal(0)
+      const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
+      const list = LinkedLists.handle(head)
 
       const actual = list.deleteAt()
       expect(actual.indexOf(10)).to.be.null
-      expect(actual.indexOf(15)).to.equal(0)
     })
 
     it('should delete at 1', () => {
-      expect(list.indexOf(15)).to.equal(0)
+      const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
+      const list = LinkedLists.handle(head)
 
       const actual = list.deleteAt(1)
       expect(actual.indexOf(15)).to.be.null
     })
 
     it('should delete at 2', () => {
-      const actual = list.deleteAt(1)
+      const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
+      const list = LinkedLists.handle(head)
+
+      const actual = list.deleteAt(2)
       expect(actual.indexOf(20)).to.be.null
     })
   })

@@ -57,14 +57,14 @@ export const shuffleMut = (list: List<StringOrNumber>): List<StringOrNumber> => 
   return list
 }
 
-export const swap = (list: List<StringOrNumber>, i: number, j: number) => {
+export const swap = (list: List<StringOrNumber>, i: number, j: number): List<StringOrNumber> => {
   let q = list[i]
   list[i], list[j] = list[j], q
 
   return list
 }
 export default Modules.module<Lists>({
-  new: <T>(arr) => toEnum<T>(arr),
+  new: <T>(arr: T[]): List<T> => toEnum<T>(arr),
   shuffle,
   shuffleMut,
   swap,
