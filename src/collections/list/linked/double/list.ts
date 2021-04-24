@@ -1,4 +1,4 @@
-import Nodes, { Node } from '@/primitive/node'
+import Nodes, { Node, NullableNode, ForwardNode } from '@/primitive/node'
 import LinkedLists, { LinkedList } from '@/collections/list/linked/single'
 import Modules from '@/core/module'
 
@@ -6,7 +6,7 @@ export interface DoublyLinkedLists {
   create: <T>(val: T) => DoublyLinkedList<T>
 }
 
-export interface DoublyLinkedList<T> extends LinkedList<T> {
+export interface DoublyLinkedList<T> extends LinkedList<T>, Node<T> {
   tail: Node<T>
   insertHead: (val: T) => DoublyLinkedList<T>
   deleteHead: () => DoublyLinkedList<T>
@@ -15,11 +15,13 @@ export interface DoublyLinkedList<T> extends LinkedList<T> {
 }
 
 const create = <T>(val: T): DoublyLinkedList<T> => {
-  const linked = LinkedLists.create(val)
+  const node = Nodes.create(val)
+  const linked = LinkedLists.handle(node)
 
   return {
+    ...node,
     ...linked,
-    tail: linked.head,
+    tail: node,
     insertHead,
     deleteHead,
     insertTail,
@@ -28,15 +30,17 @@ const create = <T>(val: T): DoublyLinkedList<T> => {
 }
 
 function insertHead<T>(this: DoublyLinkedList<T>, val: T): DoublyLinkedList<T> {
-  return { ...this, head: Nodes.create(val, null, this.head) }
+  const node = Nodes.create(val, null, this)
+  const list = LinkedLists.handle(node)
+  return { ...this, ...node, ...list }
 }
 
 // soft delete head, nodes still linked
 function deleteHead<T>(this: DoublyLinkedList<T>): DoublyLinkedList<T> {
-  const head = Nodes.create<T>(this.head!.right!.value, null, this.head.right!)
-  this.head.right!.left = head
+  const head = Nodes.create<T>(this.right!.value, null, this.right!)
+  this.right!.left = head
 
-  return { ...this, head: head }
+  return { ...LinkedLists.handle(head), ...this }
 }
 
 function insertTail<T>(this: DoublyLinkedList<T>, val: T): DoublyLinkedList<T> {

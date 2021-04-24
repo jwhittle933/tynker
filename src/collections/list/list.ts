@@ -38,11 +38,10 @@ function iter<T>(this: List<T>): Array<T> {
   return this
 }
 
-export const shuffle = (list: List<StringOrNumber>): List<StringOrNumber> =>
-  toEnum([...list].reduceRight(shuffler, []))
+export const shuffle = (list: List<StringOrNumber>): List<StringOrNumber> => toEnum([...list].reduceRight(shuffler, []))
 
 const shuffler = (acc: StringOrNumber[], _item: StringOrNumber, index: number, original: StringOrNumber[]) => {
-  return ([...acc, original.splice(0 | Math.random() * length, 1)[0]])
+  return [...acc, original.splice(0 | (Math.random() * length), 1)[0]]
 }
 
 export const shuffleMut = (list: List<StringOrNumber>): List<StringOrNumber> => {
@@ -59,7 +58,7 @@ export const shuffleMut = (list: List<StringOrNumber>): List<StringOrNumber> => 
 
 export const swap = (list: List<StringOrNumber>, i: number, j: number): List<StringOrNumber> => {
   let q = list[i]
-  list[i], list[j] = list[j], q
+  list[i], (list[j] = list[j]), q
 
   return list
 }

@@ -1,4 +1,4 @@
-declare module "tynker/primitive/node" {
+declare module 'tynker/primitive/node' {
   import { Node, NullableNode } from './node'
 
   export function create<T>(val: T): Node<T>

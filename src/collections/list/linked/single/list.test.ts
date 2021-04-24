@@ -7,11 +7,11 @@ describe('LinkedList', () => {
   describe('LinkedList.create/LinkedList.handle', () => {
     const actual = LinkedLists.create<number>(10)
 
-    it('should return a list with the correct value', function() {
+    it('should return a list with the correct value', function () {
       expect(actual.value).to.be.equal(10)
     })
 
-    it('should return a list with null right node', function() {
+    it('should return a list with null right node', function () {
       expect(actual.right).to.be.equal(null)
     })
   })
@@ -20,11 +20,11 @@ describe('LinkedList', () => {
     const node = Nodes.create(10)
     const actual = LinkedLists.handle(node)
 
-    it('should return a list with the correct value', function() {
+    it('should return a list with the correct value', function () {
       expect(actual).to.contain({ value: 10 })
     })
 
-    it('should return a list with null right node', function() {
+    it('should return a list with null right node', function () {
       expect(actual.right).to.be.equal(null)
     })
   })
@@ -109,39 +109,57 @@ describe('LinkedList', () => {
     })
   })
 
-  describe('LinkedList.all', () => {
+  describe('LinkedList.collect', () => {
     const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
     const list = LinkedLists.handle(head)
 
-    it('should a List of 3 items', () => {
-      const actual = list.all()
+    it('should return a List of 3 items', () => {
+      const actual = list.collect()
       expect(actual.length).to.be.equal(3)
     })
   })
 
   describe('LinkedList.deleteAt', () => {
-    it('should delete the first node with no argument', () => {
+    describe('When deleting the first node', () => {
       const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
       const list = LinkedLists.handle(head)
-
       const actual = list.deleteAt()
-      expect(actual.indexOf(10)).to.be.null
+
+      it('should not be found in the list', () => {
+        expect(actual.indexOf(10)).to.be.null
+      })
+
+      it('should only have a length of 2', () => {
+        expect(actual.collect().length).to.equal(2)
+      })
     })
 
-    it('should delete at 1', () => {
+    describe('When deleting the second node', () => {
       const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
       const list = LinkedLists.handle(head)
-
       const actual = list.deleteAt(1)
-      expect(actual.indexOf(15)).to.be.null
+
+      it('should not be found in the list', () => {
+        expect(actual.indexOf(15)).to.be.null
+      })
+
+      it('should only have a length of 2', () => {
+        expect(actual.collect().length).to.equal(2)
+      })
     })
 
-    it('should delete at 2', () => {
+    describe('When deleting the third node', () => {
       const head = Nodes.create(10, null, Nodes.create(15, null, Nodes.create(20)))
       const list = LinkedLists.handle(head)
-
       const actual = list.deleteAt(2)
-      expect(actual.indexOf(20)).to.be.null
+
+      it('should not be found in the list', () => {
+        expect(actual.indexOf(20)).to.be.null
+      })
+
+      it('should only have a length of 2', () => {
+        expect(actual.collect().length).to.equal(2)
+      })
     })
   })
 })

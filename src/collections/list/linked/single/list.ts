@@ -1,31 +1,33 @@
-import Nodes, { ForwardNode, NullableNode } from '@/primitive/node'
+import Nodes, { Node, ForwardNode, NullableNode } from '@/primitive/node'
 import { Nullable } from '@/primitive/null'
 import Modules from '@/core/module'
 import Lists, { List } from '@/collections/list'
+import { Enumerable } from '@/collections/enum'
 
 export interface LinkedLists {
   create: <T>(val: T) => LinkedList<T>
-  handle: <T>(node: ForwardNode<T>) => LinkedList<T>
+  handle: <T>(node: Node<T>) => LinkedList<T>
 }
 
-export interface LinkedList<T> extends ForwardNode<T> {
+export interface LinkedList<T> extends ForwardNode<T>, Enumerable<T> {
   read: (n?: number) => T | null
   indexOf: (val: T, offset?: number) => Nullable<number>
   insertAt: (val: T, n?: number) => LinkedList<T>
   deleteAt: (n?: number) => LinkedList<T>
-  all: () => List<T>
+  collect: () => List<T>
 }
 
 const create = <T>(val: T): LinkedList<T> =>
   handle(Nodes.create<T>(val, null, null))
 
-const handle = <T>(node: ForwardNode<T>): LinkedList<T> => ({
+const handle = <T>(node: Node<T>): LinkedList<T> => ({
   ...node,
   read,
   indexOf,
   insertAt,
   deleteAt,
-  all
+  collect,
+  iter: collect
 })
 
 const rotate = <T>(list: LinkedList<T>, n: number = 0): Nullable<ForwardNode<T>> => {
@@ -81,9 +83,10 @@ function deleteAt<T>(this: LinkedList<T>, n: number = 0): LinkedList<T> {
   return this
 }
 
-function all<T>(this: LinkedList<T>): List<T> {
+function collect<T>(this: LinkedList<T>): List<T> {
   let out: T[] = []
 
+  // this works, but inefficient
   for(let i = 0, current = rotate(this, i); current; i++, current = rotate(this, i)) {
     out = [...out, current!.value]
   }
