@@ -4,6 +4,7 @@ import Modules from '@/core/module'
 import Lists, { List } from '@/collections/list'
 import { Enumerable } from '@/collections/enum'
 
+// Module Interface
 export interface LinkedLists {
   create: <T>(val: T) => LinkedList<T>
   handle: <T>(node: Node<T>) => LinkedList<T>
@@ -17,8 +18,7 @@ export interface LinkedList<T> extends ForwardNode<T>, Enumerable<T> {
   collect: () => List<T>
 }
 
-const create = <T>(val: T): LinkedList<T> =>
-  handle(Nodes.create<T>(val, null, null))
+const create = <T>(val: T): LinkedList<T> => handle(Nodes.create<T>(val, null, null))
 
 const handle = <T>(node: Node<T>): LinkedList<T> => ({
   ...node,
@@ -27,7 +27,7 @@ const handle = <T>(node: Node<T>): LinkedList<T> => ({
   insertAt,
   deleteAt,
   collect,
-  iter: collect
+  iter: collect,
 })
 
 const rotate = <T>(list: LinkedList<T>, n: number = 0): Nullable<ForwardNode<T>> => {
@@ -45,8 +45,8 @@ const rotate = <T>(list: LinkedList<T>, n: number = 0): Nullable<ForwardNode<T>>
   return current
 }
 
-const nodeValue = <T>(node: Nullable<ForwardNode<T>>): Nullable<T> => node && node!.value || null
-const nodeNext = <T>(node: Nullable<ForwardNode<T>>): NullableNode<T> => node && node!.right || null
+const nodeValue = <T>(node: Nullable<ForwardNode<T>>): Nullable<T> => (node && node!.value) || null
+const nodeNext = <T>(node: Nullable<ForwardNode<T>>): NullableNode<T> => (node && node!.right) || null
 
 function read<T>(this: LinkedList<T>, n: number = 0): Nullable<T> {
   if (!n) return this.value
@@ -76,8 +76,7 @@ function deleteAt<T>(this: LinkedList<T>, n: number = 0): LinkedList<T> {
   if (!n) return { ...this, ...nodeNext(this) }
 
   const nodeAtN = rotate(this, n - 1)
-  if (!nodeAtN)
- return this
+  if (!nodeAtN) return this
 
   nodeAtN.joinRight(nodeNext(nodeAtN)!.right!) // handle nulls
   return this
@@ -87,7 +86,7 @@ function collect<T>(this: LinkedList<T>): List<T> {
   let out: T[] = []
 
   // this works, but inefficient
-  for(let i = 0, current = rotate(this, i); current; i++, current = rotate(this, i)) {
+  for (let i = 0, current = rotate(this, i); current; i++, current = rotate(this, i)) {
     out = [...out, current!.value]
   }
 

@@ -1,134 +1,49 @@
 import Options, { Option } from '@/core/option'
-import { cast } from '@/core/generics'
+import Modules from '@/core/module'
+import { Nullable } from '@/primitive/null'
 
 // Module Interface
 export interface Results {
-  newOk: <T>(data: T) => Result<T, unknown>
-  newError: <E>(error: E) => Result<unknown, E>
+  wrap: <T>(data: T) => Ok<T>
+  wrapErr: <E>(error: E) => Err<E>
+  unwrap: <T>(r: Result<T>) => Nullable<T>
+  expect: <T>(r: Result<T>, msg: string) => T | never
+  isOk: <T>(r: Result<T>) => boolean
+  isErr: <T>(r: Result<T>) => boolean
+  ok: <T>(r: Result<T>) => Option<T | false>
+  err: <E>(r: Result<E>) => Option<E | false>
 }
 
-// `Result` wraps two potential values, Ok, and Err
-export interface Result<T, E> {
-  ok: () => Option<T>
-  isOk: () => boolean
-  asOk: () => Ok<T>
-  err: () => Option<E>
-  isErr: () => boolean
-  asErr: () => Err<E>
-  contains: (val: T) => boolean
-  containsErr: (err: E) => boolean
-  unwrap: () => T | undefined
-  unwrapOr: (def: T) => T
-  unwrapErr: () => E | undefined
-  expect: (msg: string) => T | never
-  map: (mapper: { (data: T): Result<T, E> }) => Result<T, E>
+export interface Result<T> {}
+
+export interface Ok<T> extends Result<T> {
+  value: T
 }
 
-// Ok extends Result (and can be used in its place)
-// The Ok interface wraps the result of a successful
-// operation
-interface Ok<T> extends Result<T, unknown> {
-  data: T
-}
-
-// Err extends Result (and can be used in its place)
-// The Err interface wraps the result of a failed
-// operation
-interface Err<E> extends Result<unknown, E> {
+export interface Err<E> extends Result<E> {
   error: E
 }
 
-function ok<T, E>(this: Result<T, E>): Option<T | false> {
-  if (this.isOk()) return Options.some<T>(this.unwrap()!)
-  return Options.none()
-}
+// create functions
+const wrap = <T>(value: T): Ok<T> => ({ value } as Ok<T>)
 
-function isOk<T, E>(this: Result<T, E>): boolean {
-  return !!(<Ok<T>>this)
-}
+const wrapErr = <E>(error: E): Err<E> => ({ error } as Err<E>)
 
-function asOk<T>(this: Result<T, unknown>): Ok<T> {
-  return <Ok<T>>this
-}
+// operate
+const unwrap = <T>(r: Result<T>): Nullable<T> => (r as Ok<T>).value || null
 
-function err<T, E>(this: Result<T, E>): Option<E | false> {
-  if (this.isErr()) return Options.some<E>(this.unwrapErr()!)
-  return Options.none()
-}
-
-function isErr<T, E>(this: Result<T, E>): boolean {
-  return !!(<Err<E>>this)
-}
-
-function asErr<E>(this: Result<unknown, E>): Err<E> {
-  return <Err<E>>this
-}
-
-function contains<T, E>(this: Result<T, E>, val: T): boolean {
-  return this.isOk() && this.asOk().data === val
-}
-
-function containsErr<T, E>(this: Result<T, E>, err: E): boolean {
-  return this.isErr() && this.asErr().error === err
-}
-
-function unwrap<T, E>(this: Result<T, E>): T | undefined {
-  if (this.isOk()) return this.asOk().data
-  return undefined
-}
-
-function unwrapOr<T, E>(this: Result<T, E>, def: T): T {
-  if (this.isOk()) return this.asOk().data
-  return def
-}
-
-function unwrapErr<T, E>(this: Result<T, E>): E | undefined {
-  if (this.isErr()) return this.asErr().error
-  return undefined
-}
-
-// expect asserts that the data exists and returns that data,
-// or it will throw an error
-// Should be used only when you know for certain that the operation
-// succeeded, or within a try/catch
-function expect<T>(this: Result<T, unknown>, msg: string): T | never {
-  if (this.isOk()) return this.unwrap()!
+const expect = <T>(r: Result<T>, msg: string): T | never => {
+  const val = (r as Ok<T>).value
+  if (val) return val
 
   throw new Error(msg)
 }
 
-// next in functional programming is often called `bind`
-// The wrapped data will be unwrapped and passed to the `nextFunc`,
-// unless the Result is an error and the Result will be returned
-// The `nextFunc` must return a new Result, either newOk or newError
-function map<T, E>(this: Result<T, E>, mapper: { (data: T): Result<T, E> }): Result<T, E> {
-  if (this.isErr()) return this
+const isOk = <T>(r: Result<T>): boolean => !!(r as Ok<T>).value
+const isErr = <T>(r: Result<T>): boolean => !isOk(r)
 
-  return mapper(this.unwrap()!)
-}
+const ok = <T>(r: Result<T>): Option<T | false> => (isOk(r) && Options.some((r as Ok<T>).value)) || Options.none()
 
-const resultBase = {
-  ok,
-  isOk,
-  asOk,
-  err,
-  isErr,
-  asErr,
-  contains,
-  containsErr,
-  unwrap,
-  unwrapOr,
-  unwrapErr,
-  expect,
-  map,
-}
+const err = <E>(r: Result<E>): Option<E | false> => (isErr(r) && Options.some((r as Err<E>).error)) || Options.none()
 
-const newError = <E>(error: E): Result<unknown, E> => {
-  return <Err<E>>{ error, ...resultBase }
-}
-
-const newOk = <T>(data: T): Result<T, unknown> => {
-  return <Ok<T>>{ data, ...resultBase }
-}
-
-export default cast<Results>({ newOk, newError })
+export default Modules.module<Results>({ wrap, wrapErr, unwrap, expect, isOk, isErr, ok, err })

@@ -1,9 +1,8 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
 import DLL from './list'
-import Nodes from '@/primitive/node'
 
-describe.only('DoublyLinkedList', () => {
+describe('DoublyLinkedList', () => {
   describe('create', () => {
     describe('When list is created with 1 value', () => {
       const actual = DLL.create(10)

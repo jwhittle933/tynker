@@ -5,7 +5,7 @@ import Nodes from '@/primitive/node'
 
 describe('LinkedList', () => {
   describe('LinkedList.create/LinkedList.handle', () => {
-    const actual = LinkedLists.create<number>(10)
+    const actual = LinkedLists.create<number>(10) // reconsider method name
 
     it('should return a list with the correct value', function () {
       expect(actual.value).to.be.equal(10)

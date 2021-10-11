@@ -28,6 +28,7 @@ export interface Option<T = false> extends OptionBase {
   Some?: T
   None?: boolean
 }
+
 function isSome<T>(this: Option<T>): boolean {
   return !this.None!
 }
@@ -39,7 +40,7 @@ function isNone<T>(this: Option<T>): boolean {
 function unwrap<T>(this: Option<T>): T | never {
   if (this.isSome()) return this.Some!
 
-  throw cast<OptionError>({ message: 'Option is None' })
+  throw Modules.module<OptionError>({ message: 'Option is None' })
 }
 
 function unwrapOr<T>(this: Option<T>, def: T): T {
